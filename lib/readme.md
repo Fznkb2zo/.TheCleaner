@@ -49,14 +49,14 @@ Window:SelectTab(Tab1)
 local Section = Tab1:AddSection({"Section"})
 ```
 
-## Toggle
+## Textbox
 
 ```lua
-Tab1:AddToggle({
-    Name = "Toggle",
-    Default = false,
-    Callback = function(state)
-
+Tab1:AddTextBox({ 
+    Name = "Nome do Jogador",  
+    PlaceholderText = "Ex: Specter", 
+    Callback = function(Value)
+       
     end
 })
 ```
