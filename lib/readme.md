@@ -49,6 +49,18 @@ Window:SelectTab(Tab1)
 local Section = Tab1:AddSection({"Section"})
 ```
 
+## Toggle
+
+```lua
+Tab1:AddToggle({
+    Name = "Toggle",
+    Default = false,
+    Callback = function(state)
+
+    end
+})
+```
+
 ## Paragraph
 
 ```lua
