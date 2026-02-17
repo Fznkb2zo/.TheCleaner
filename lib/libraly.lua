@@ -2563,7 +2563,9 @@ function redzlib:MakeWindow(Configs)
 				Position = UDim2.new(1, -10, 0.5),
 				AnchorPoint = Vector2.new(1, 0.5),
 				BackgroundColor3 = Theme["Color Stroke"]
-			}), "Stroke")Make("Corner", SelectedFrame, UDim.new(0, 4))
+			}), "Stroke")
+			
+			Make("Corner", SelectedFrame, UDim.new(0, 4))
 			
 			local TextBoxInput = InsertTheme(Create("TextBox", SelectedFrame, {
 				Size = UDim2.new(0.85, 0, 0.85, 0),
@@ -2575,7 +2577,7 @@ function redzlib:MakeWindow(Configs)
 				TextColor3 = Theme["Color Text"],
 				ClearTextOnFocus = TClearText,
 				PlaceholderText = TPlaceholderText,
-				Text = ""
+				Text = TDefault or ""
 			}), "Text")
 			
 			local Pencil = Create("ImageLabel", SelectedFrame, {
@@ -2587,27 +2589,58 @@ function redzlib:MakeWindow(Configs)
 			})
 			
 			local TextBox = {}
+			TextBox.OnChanging = false
+			
+			function TextBox:Clear()
+				TextBoxInput.Text = ""
+			end
+			
+			function TextBox:Set(Value)
+				TextBoxInput.Text = tostring(Value)
+			end
+			
+			function TextBox:Get()
+				return TextBoxInput.Text
+			end
+			
+			function TextBox:Visible(...)
+				Funcs:ToggleVisible(Button, ...)
+			end
+			
+			function TextBox:Destroy()
+				Button:Destroy()
+			end
+			
 			local function Input()
 				local Text = TextBoxInput.Text
+				
 				if Text:gsub(" ", ""):len() > 0 then
-					if TextBox.OnChanging then Text = TextBox.OnChanging(Text) or Text end
-					Funcs:FireCallback(Callback, Text)
+					if TextBox.OnChanging then
+						Text = TextBox.OnChanging(Text) or Text
+					end
+					
+					local Result = Funcs:FireCallback(Callback, Text, TextBox)
+					
+					if Result == "Clear" then
+						TextBoxInput.Text = ""
+						return
+					end
+					
 					TextBoxInput.Text = Text
 				end
 			end
 			
-			TextBoxInput.FocusLost:Connect(Input)Input()
+			TextBoxInput.FocusLost:Connect(Input)
+			Input()
 			
 			TextBoxInput.FocusLost:Connect(function()
 				CreateTween({Pencil, "ImageColor3", Color3.fromRGB(255, 255, 255), 0.2})
 			end)
+			
 			TextBoxInput.Focused:Connect(function()
 				CreateTween({Pencil, "ImageColor3", Theme["Color Theme"], 0.2})
 			end)
 			
-			TextBox.OnChanging = false
-			function TextBox:Visible(...) Funcs:ToggleVisible(Button, ...) end
-			function TextBox:Destroy() Button:Destroy() end
 			return TextBox
 		end
 		function Tab:AddDiscordInvite(Configs)
